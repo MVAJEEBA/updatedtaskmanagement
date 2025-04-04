@@ -1,0 +1,53 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>Admin Dashboard</h1>
+  
+  <h2>Tasks</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Description</th>
+        <th>Created By</th>
+        <th>Assigned To</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+        <th>Create Task</th>
+        <th>Create Task</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tasks in tasks %}
+        <tr>
+          <td>{{ tasks.name }}</td>
+          <td>{{ tasks.description }}</td>
+          <td>{{ tasks.created_by }}</td>
+          <td>{{ tasks.assigned_to.username}}</td>
+          <td>{{ tasks.start_date }}</td>
+          <td>{{ tasks.end_date }}</td>
+          <td>{{ tasks.get_status_display }}</td>
+          <td>{{ tasks.employee}}</td>
+          <td>{{ tasks.project}}</td>
+          <td>{{ tasks.created_by}}</td>
+          <td>
+            <a href="">View</a> 
+          </td>
+          <td>
+            <a href="">
+              <button class="btn btn-secondary" type="button">Create Task</button>
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div>
+    <a href="{% url 'create_project' %}">
+      <button class="btn btn-primary" type="button">Create Project</button>
+    </a>
+  </div>
+{% endblock %}

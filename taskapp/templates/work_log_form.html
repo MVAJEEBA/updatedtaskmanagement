@@ -1,0 +1,23 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>Log Work Hours for Task: {{ task.name }}</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="hours">Hours Worked (max 8 hours per day):</label>
+      <input type="number" name="hours_worked" id="hours_worked" class="form-control" max="8" min="1" required>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Work Log Description (min 20 characters):</label>
+      <textarea name="description" id="description" class="form-control" rows="4" minlength="20" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Work Log</button>
+  </form>
+
+  <h3>Total Hours Worked: {{ total_hours_worked }} hours</h3>
+
+{% endblock %}

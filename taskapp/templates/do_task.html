@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'task/style.css' %}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+</head>
+<body>
+
+<h2>Do Task Form</h2>
+
+<div class="container">
+  <form method="post" enctype="multipart/form-data" id="taskform">
+    {% csrf_token %}
+    
+    <div class="row">
+      <div class="col-75">
+        <input type="file" name="uploadfile" id="uploadfile" placeholder="Upload File">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-25">
+        <label for="selectstatus">Select Status</label>
+      </div>
+      <div class="col-75">
+        <select name="statusid" id="statusid">
+          <option value="">Select Status</option>
+          {% for data in status %}
+            <option value="{{ data.id }}">{{ data.status_type }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <input type="hidden" id="task_id" name="data-id" value="{{task_details.id}}">
+    
+
+
+   
+
+    <div class="row">
+      <input type="button" value="Submit" class="btn-sub" id="submitBtn">
+    </div>
+  </form>
+</div>
+<div id="statusMessage" class="status-message"></div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+  // On Submit button click
+  // On Submit button click
+$("#submitBtn").on("click", function(e) {
+  e.preventDefault();
+
+  var statusid = $("#statusid").val();
+  var taskId = $("#task_id").val();  
+  var formData = new FormData(); // Create FormData object
+
+  formData.append("id", taskId);
+  formData.append("statusid", statusid);
+  formData.append("uploadfile", $("#uploadfile")[0].files[0]);  // Append file
+
+  // Append CSRF token
+  formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+
+  // Send AJAX request to update the task status
+  $.ajax({
+      url: "{% url 'update_staus' %}",  // Ensure the URL is correct
+      method: "POST",
+      data: formData,
+      processData: false,  // Don't process the data
+      contentType: false,  // Don't set content-type (browser will set it correctly)
+      success: function(response) {
+          console.log("Task status updated successfully.");
+          // Optionally update the UI here (e.g., show a success message)
+          $("#statusMessage").text(response.message).css("color", "green");
+      },
+      error: function(xhr, status, error) {
+          console.log("Error updating task status:", error);
+      }
+  });
+});
+
+</script>
+
+</body>
+</html>

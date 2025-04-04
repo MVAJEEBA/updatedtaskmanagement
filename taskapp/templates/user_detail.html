@@ -1,0 +1,37 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>User Details</h1>
+  
+  <h2>{{ user.username }}'s Profile</h2>
+  <p>Email: {{ user.email }}</p>
+  <p>Role: {{ user.get_role_display }}</p>
+
+  <h3>Assigned Tasks</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Task Name</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Assigned Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td>{{ task.name }}</td>
+          <td>{{ task.priority }}</td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.assigned_date }}</td>
+          <td>
+            <a href="">View</a> <!-- Link to task details -->
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><a href="{% url 'admin_dashboard' %}">Back to Dashboard</a></p>
+{% endblock %}

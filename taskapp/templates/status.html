@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    {% load static %}
+    
+
+    <link rel="stylesheet" href="{% static 'logins/style.css' %}" />
+<body>
+
+<form  method="post"style="border:1px solid #ccc">
+    {% csrf_token %}
+  <div class="container">
+    <h1>Employees</h1>
+    
+    <hr>
+    <div>
+    
+
+    <label for="statustype"><b>Statustype</b></label>
+    <input type="text" placeholder="statustype" name="statustype" required>
+
+    
+
+    
+    
+    
+    
+
+    <div class="clearfix">
+       
+      <button type="submit" class="Submit">Submit</button></a>
+    </div>
+  </div>
+</form>
+
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Create Task</h1>
+        <hr>
+
+        <!-- Task Creation Form -->
+        <form method="post" id="task-form" style="border:1px solid #ccc">
+            {% csrf_token %}
+            <div class="container">
+                <h1>Create Task</h1>
+                <hr>
+
+                <!-- Select Project -->
+                <label for="project"><b>Project</b></label>
+                <select name="project" required>
+                    <option value="{{ project.id }}" selected>{{ project.name }}</option>
+                </select><br><br>
+
+                <!-- Task Name -->
+                <label for="name"><b>Task Name</b></label>
+                <input type="text" placeholder="Enter Task Name" name="name" required><br><br>
+
+                <!-- Task Description -->
+                <label for="description"><b>Task Description</b></label>
+                <textarea placeholder="Enter Task Description" name="description" required></textarea><br><br>
+
+                <!-- Task Priority -->
+                <label for="priority"><b>Task Priority</b></label>
+                <select name="priority" required>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select><br><br>
+
+                <!-- Task Status -->
+                <label for="assigned_to"><b>Employees</b></label>
+                <select name="assigned_to" required>
+                    {% for users in users %}
+                        <option value="{{ users.id }}">{{ users.username }}</option>
+                    {% endfor %}
+                </select><br><br>
+                <!-- Assign To -->
+                <label for="status"><b>status_detailes</b></label>
+                <select name="status" required>
+                    {% for status_details in status_details %}
+                        <option value="{{ status_details.id }}">{{ status_details.status_type }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <!-- Due Date -->
+                <label for="due_date"><b>Due Date</b></label>
+                <input type="date" name="due_date" id="due_date" required><br><br>
+
+                <script>
+                    const today = new Date().toISOString().split('T')[0];  // Format to YYYY-MM-DD
+                    document.getElementById('due_date').setAttribute('min', today);
+                </script>
+
+                <!-- Submit Button -->
+                <div class="clearfix">
+                    <button type="submit" class="Submit">Submit</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="message-container"></div>
+    </div>
+
+    <script>
+        // Handle form submission with AJAX
+        document.getElementById('task-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent normal form submission
+            
+            const formData = new FormData(this);
+    
+            // Create a new XMLHttpRequest to submit the form asynchronously
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '{% url "create_task" id=project.id %}', true);
+    
+            // Set CSRF token header for security
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Parse the response
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // Display success message with an "OK" button
+                        showAlert('success', response.message);
+                    } else {
+                        // Display error message with an "OK" button
+                        showAlert('danger', response.message);
+                    }
+                } else {
+                    showAlert('danger', 'An error occurred while processing your request.');
+                }
+            };
+            
+            xhr.send(formData);
+        });
+    
+        // Function to show alert box with message and an "OK" button
+        // Function to show alert box with message and an "OK" button
+function showAlert(type, message) {
+    const messageContainer = document.getElementById('message-container');
+    
+    // Create the alert div
+    const alertDiv = document.createElement('div');
+    alertDiv.classList.add('alert', `alert-${type}`, 'alert-dismissible', 'fade', 'show');
+    alertDiv.setAttribute('role', 'alert');
+    alertDiv.innerHTML = `
+        <strong>${type === 'success' ? 'Success!' : 'Error!'}</strong> ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+        <button id="ok-btn" class="btn btn-primary">OK</button>
+    `;
+    
+    // Append the alert div to the message container
+    messageContainer.innerHTML = '';  // Clear any previous messages
+    messageContainer.appendChild(alertDiv);
+    
+    // Add click listener to the "OK" button
+    document.getElementById('ok-btn').addEventListener('click', function() {
+        // Redirect to the manager dashboard when "OK" is clicked
+        window.location.href = "{% url 'manager_dashboard' %}";
+    });
+}
+
+    </script>
+    
+{% endblock %}

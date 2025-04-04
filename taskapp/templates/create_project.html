@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'logins/style.css' %}" />
+
+<body>
+
+<form method="post" style="border:1px solid #ccc">
+    {% csrf_token %}
+    <div class="container">
+        <h1>Create or Update Project</h1>
+        <hr>
+        
+        <!-- Project Name -->
+        <label for="name"><b>Project Name</b></label>
+        <input type="text" placeholder="Enter Project Name" name="name" required>
+
+        <!-- Project Description -->
+        <label for="description"><b>Project Description</b></label>
+        <textarea placeholder="Enter Project Description" name="description" required></textarea>
+
+        <!-- Manager Selection -->
+        <label for="manager"><b>Project Manager</b></label>
+        <select name="manager" required>
+            <option value="">Select Manager</option>
+            {% for manager in managers %}
+            <option value="{{ manager.id }}">{{ manager.username }}</option>
+               
+            {% endfor %}
+        </select>
+
+        <!-- Start Date -->
+        <label for="start_date"><b>Start Date</b></label>
+        <input type="date" name="start_date" required>
+
+        <!-- End Date -->
+        <label for="end_date"><b>End Date</b></label>
+        <input type="date" name="end_date" required>
+
+        <!-- Project Status -->
+        <label for="status"><b>status_detailes</b></label>
+                <select name="status" required>
+                    {% for status_details in status_details %}
+                        <option value="{{ status_details.id }}">{{ status_details.status_type }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+        <div class="clearfix">
+            <button type="submit" class="Submit">Submit</button>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>
