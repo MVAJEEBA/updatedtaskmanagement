@@ -69,28 +69,28 @@
     </div>
 
     <script>
-        // Handle form submission with AJAX
+        
         document.getElementById('task-form').addEventListener('submit', function(event) {
             event.preventDefault();  // Prevent normal form submission
             
             const formData = new FormData(this);
     
-            // Create a new XMLHttpRequest to submit the form asynchronously
+           
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '{% url "create_task" id=project.id %}', true);
     
-            // Set CSRF token header for security
+           
             xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
             
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    // Parse the response
+                    
                     const response = JSON.parse(xhr.responseText);
                     if (response.success) {
-                        // Display success message with an "OK" button
+                       
                         showAlert('success', response.message);
                     } else {
-                        // Display error message with an "OK" button
+                       
                         showAlert('danger', response.message);
                     }
                 } else {
@@ -101,8 +101,7 @@
             xhr.send(formData);
         });
     
-        // Function to show alert box with message and an "OK" button
-        // Function to show alert box with message and an "OK" button
+        
 function showAlert(type, message) {
     const messageContainer = document.getElementById('message-container');
     
@@ -123,7 +122,7 @@ function showAlert(type, message) {
     // Add click listener to the "OK" button
     document.getElementById('ok-btn').addEventListener('click', function() {
         // Redirect to the manager dashboard when "OK" is clicked
-        window.location.href = "{% url 'manager_dashboard' %}";
+        window.location.href = "{% url 'project_detail' project.id %}";
     });
 }
 

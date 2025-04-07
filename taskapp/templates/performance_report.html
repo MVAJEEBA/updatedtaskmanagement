@@ -1,0 +1,20 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>Admin Dashboard</h1>
+  
+  <h2>Performance Reports</h2>
+  
+  {% for performance_report in performance_reports %}
+    <div class="performance-report">
+      <h3>Employee: {{ performance_report.employee.username }}</h3>
+      <p><strong>Total Hours Worked:</strong> {{ performance_report.total_hours_worked }}</p>
+      <p><strong>Tasks Completed:</strong> {{ performance_report.tasks_completed }}</p>
+      <p><strong>Report Date:</strong> {{ performance_report.report_date }}</p>
+      <hr>
+    </div>
+  {% empty %}
+    <p>No performance reports available.</p>
+  {% endfor %}
+
+{% endblock %}

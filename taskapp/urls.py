@@ -14,7 +14,7 @@ urlpatterns = [
     path('employee_dashboard/', views.employee_dashboard, name='employee_dashboard'),
     path('project/<int:project_id>/', views.project_detail, name='project_detail'),
     # path('task_assignment/', views.task_assignment, name='task_assignment'),
-    path('home/', views.home, name='home'),
+   
     path('create_project/', views.create_project, name='create_project'),
     path('create_task/<int:id>/', views.create_task, name='create_task'),
     path('project_list/', views.project_list, name='project_list'),
@@ -24,6 +24,8 @@ urlpatterns = [
    path('work_log/',views.work_log_view, name = 'work_log'),
     path('do-task/<int:id>/', views.do_task, name='do_task'),
     path('statustype/',views.statustype,name='statustype'),
-    path('update_staus/', views.update_staus, name='update_staus')
+    path('update_staus/', views.update_staus, name='update_staus'),
+    path('performance_report/<str:username>/', views.performance_report, name='performance_report'),
+    path('performance_reportview/',views.performance_reportview,name='performance_reportview')
 
 ]

@@ -118,15 +118,7 @@ class EmployeePerformanceReport(models.Model):
     def __str__(self):
         return f"Performance Report for {self.employee} on {self.report_date}"
 
-    def update_report(self):
-        """
-        This method will be used to update the performance report for an employee.
-        It will update the count of completed tasks and total hours worked.
-        """
-        completed_tasks = self.employee.tasks_assigned.filter(status='completed')
-        self.tasks_completed = completed_tasks.count()
-        self.total_hours_worked = sum(task.worklogs.filter(date=self.report_date).values_list('hours', flat=True))
-        self.save()
+    
 
     def generate_report(self):
         """
