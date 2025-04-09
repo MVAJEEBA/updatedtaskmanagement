@@ -1,45 +1,33 @@
-{% extends 'base_generic.html' %}
-
-{% block content %}
+{% load static %}
+  {% include "adminheader.html" %}
   <h1>Admin Dashboard</h1>
-  
+
   <h2>Users</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-        <tr>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.get_role_display }}</td>
-          <td>
-            <a href="{% url 'user_detail' user.id %}">View</a> 
-            <!-- Add other actions if needed (e.g., delete, edit) -->
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
 
-  
-          <td>
-            <a href="{% url 'create_project'  %}"><button class="btn btn-primary" type="submit">Create Project</button></a>
-          </td>
-          <td>
-            <a href="{% url 'project_list'  %}"><button class="btn btn-primary" type="submit">Project List</button></a>
-          </td>
+  <div class="table-container">
+      <table>
+          <thead>
+              <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for user in users %}
+                  <tr>
+                      <td>{{ user.username }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.get_role_display }}</td>
+                      <td>
+                          <a href="{% url 'user_detail' user.id %}">View</a> 
+                      </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
 
-          <td>
-            <a href="{% url 'performance_reportview'  %}"><button class="btn btn-primary" type="submit">Perfomance Report</button></a>
-          </td>
-    </tbody>
-  </table>
-
-{% endblock %}
+</body>
+</html>

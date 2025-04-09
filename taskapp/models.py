@@ -27,6 +27,10 @@ class CustomUser(AbstractUser):
         related_query_name='customuser',
     )
 
+class Statuses(models.Model):
+    status_type=models.CharField(max_length=50)
+
+
     
 
 class Project(models.Model):
@@ -38,11 +42,11 @@ class Project(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField()
-    created_by =  models.TextField(max_length=50,null=True, blank=True)
+    created_by = models.TextField(max_length=50, null=True, blank=True)
     assigned_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_managers')
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started')
+    status = models.ForeignKey(Statuses, on_delete=models.CASCADE, null=True)  # ForeignKey to Statuses
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -50,10 +54,10 @@ class Project(models.Model):
         return self.name
 
     def is_active(self):
-        return self.status == 'in_progress'
+        return self.status.status_type == 'in_progress'  # Referencing the name field of Status model
 
     def is_completed(self):
-        return self.status == 'completed'
+        return self.status.status_type == 'completed'
 
     def is_upcoming(self):
         return self.start_date > timezone.now().date()
@@ -61,9 +65,6 @@ class Project(models.Model):
     def is_overdue(self):
         return self.end_date < timezone.now().date() and not self.is_completed()
 
-
-class Statuses(models.Model):
-    status_type=models.CharField(max_length=50)
 
 class Task(models.Model):
     PRIORITY_CHOICES = (
@@ -79,7 +80,7 @@ class Task(models.Model):
     description = models.TextField()
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     status = models.ForeignKey(Statuses, on_delete=models.CASCADE,null=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks',null=True, blank=True, )
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks',null=True, blank=True,)
     due_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -126,7 +127,6 @@ class EmployeePerformanceReport(models.Model):
         """
         return f"Employee: {self.employee.username}\nTasks Completed: {self.tasks_completed}\nHours Worked: {self.total_hours_worked}\nFeedback: {self.feedback if self.feedback else 'No feedback'}"
 
-# # # models.py
 
 
 

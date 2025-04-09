@@ -1,8 +1,5 @@
-{% extends 'base_generic.html' %}
-
-{% block title %}Manager Dashboard - Task Management{% endblock %}
-
-{% block content %}
+{% load static %}
+{% include "managerheder.html" %}
   <h2>Manager Dashboard</h2>
   <p>Welcome, Manager!</p>
 
@@ -44,9 +41,5 @@
     </tbody>
   </table>
 
-  <div>
-    <a href="{% url 'create_project' %}">
-      <button class="btn btn-primary" type="button">Create Project</button>
-    </a>
-  </div>
-{% endblock %}
+  
+

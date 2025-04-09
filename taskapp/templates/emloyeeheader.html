@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'adminandmanager/style.css' %}">
+</head>
+<body>
+
+  <!-- Header with Navigation Bar -->
+  <header class="header">
+    <nav class="navbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+            <a href="{% url 'emplyeeperfomance_report' %}" class="nav-link">Perfomance Report</a>
+        </li>
+        
+        <li><a href="{% url 'logout' %}">logout</a></li>
+       
+        
+  
+      </ul>
+    </nav>
+  </header>

@@ -12,10 +12,18 @@ class RoleBasedAccessControlMiddleware(MiddlewareMixin):
             # Define a mapping of URL paths to roles
             path_role_map = {
                 '/admin_dashboard/': 'admin', 
-                 '/create_project/': 'admin', 
+                '/create_project/': 'admin',
+                '/project_list/': 'admin',
+                '/user_detail/': 'admin',
+                '/performance_reportview/': 'admin',
+                '/edit_project/': 'admin',
+                '/delete_project/': 'admin',
+                '/registration/': 'manager',
+                '/project_detail/': 'manager',
                 'employee_dashboard/': 'employee',
                 '/manager_dashboard/': 'manager',
                 '/create_task/': 'manager',
+                
 
             }
             
@@ -46,3 +54,4 @@ class RoleBasedAccessControlMiddleware(MiddlewareMixin):
         # Return the response if no redirects are triggered
         response = self.get_response(request)
         return response
+

@@ -1,77 +1,81 @@
-{% extends 'base_generic.html' %}
-
-{% block content %}
-  <h1>Employee Dashboard</h1>
-  <h3>Total Hours Worked: {{ total_hours_worked }} hours</h3>
+{% load static %}
+{% include "emloyeeheader.html" %}
 
 
-  <h2>Assigned Tasks</h2>
-  <table>
+<link rel="stylesheet" href="{% static 'employee/style.css' %}">
+<h1>Employee Dashboard</h1>
+<h3>Total Hours Worked: {{ total_hours_worked }} hours</h3>
+
+{% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+        {{ message }}
+    </div>
+{% endfor %}
+
+<h2>Assigned Tasks</h2>
+<table>
     <thead>
-      <tr>
-        <th>Task Name</th>
-        <th>Priority</th>
-        <th>Status</th>
-        <th>Due Date</th>
-        <th>Work Submission</th>
-       
-      </tr>
+        <tr>
+            <th>Task Name</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Work Submission</th>
+        </tr>
     </thead>
     <tbody>
-      {% for task in tasks %}
-      <tr data-task-id="{{ task.id }}">
-        <td>{{ task.name }}</td>
-        <td>{{ task.get_priority_display }}</td>
-        <td class="task-status">{{ task.status.status_type }}</td>
-        <td>{{ task.due_date }}</td>
-        <td>
-            {% if task.status.id != 2 %}
-                <a href="{% url 'do_task' task.id %}">
-                    <button class="btn btn-primary">Do Task</button>
-                </a>
-            {% else %}
-                <span>Task Completed</span>
-            {% endif %}
-        </td>
-    </tr>
-    
-      {% endfor %}
+        {% for task in tasks %}
+        <tr data-task-id="{{ task.id }}">
+            <td>{{ task.name }}</td>
+            <td>{{ task.get_priority_display }}</td>
+            <td class="task-status">{{ task.status.status_type }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>
+                {% if task.status.id != 1 %}
+                    <a href="{% url 'do_task' task.id %}">
+                        <button class="btn btn-primary">Do Task</button>
+                    </a>
+                {% else %}
+                    <span>Task Completed</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
-  </table>
+</table>
 
-  <div>
+<div>
     <h3>Work Log Submission</h3>
     <form method="POST" action="{% url 'work_log' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="hours">Work Hours (max 8 hours per day):</label>
-        <input type="number" id="hours" name="hours" max="8" min="1" required>
-      </div>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="hours">Work Hours (max 8 hours per day):</label>
+            <input type="number" id="hours" name="hours" max="8" min="1" required>
+        </div>
 
-      <div class="form-group">
-        <label for="description">Work Log Description (min 20 characters):</label>
-        <textarea name="description" id="description" rows="4" required minlength="20"></textarea>
-      </div>
-      <select name="task" id="task">
-        <option value="">--Please choose an option--</option>
-        {% for tasks in tasks %}
-           <option value="{{ tasks.id }}">{{ tasks.name }}</option>
-        {% endfor %}
-      </select>
+        <div class="form-group">
+            <label for="description">Work Log Description (min 20 characters):</label>
+            <textarea name="description" id="description" rows="4" required minlength="20"></textarea>
+        </div>
 
-      <div class="form-group">
-         <button type="submit" class="btn btn-success">Submit Work Log</button>
-      </div>
+        <select name="task" id="task">
+            <option value="">--Please choose an option--</option>
+            {% for task in tasks %}
+            <option value="{{ task.id }}">{{ task.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">Submit Work Log</button>
+        </div>
     </form>
-  </div>
+</div>
 
-  <hr>
+<hr>
 
-  <h3>Performance</h3>
-  <p>You have completed {{ completed_task_count }} out of {{ total_task_count }} tasks.</p>
-  {% if completed_task_count >= 5 %}
-    <h4>Performance Report Generated</h4>
-    <p>Congratulations! A performance report has been automatically generated for you.</p>
-  {% endif %}
-
-{% endblock %}
+<h3>Performance</h3>
+<p>You have completed {{ completed_task_count }} out of {{ total_task_count }} tasks.</p>
+{% if completed_task_count >= 5 %}
+<h4>Performance Report Generated</h4>
+<p>Congratulations! A performance report has been automatically generated for you.</p>
+{% endif %}

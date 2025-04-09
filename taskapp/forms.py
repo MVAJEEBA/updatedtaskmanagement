@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project
+# from .models import Project
 from django import forms
 from .models import Task
 # # forms.py
@@ -9,8 +9,14 @@ from .models import WorkLog  # Import WorkLog model
 
 
 from django import forms
-from .models import Project
+# from .models import Project
 from django.core.exceptions import ValidationError
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser
+from django import forms
+from django import forms
+from .models import Task
 
 
 
@@ -44,12 +50,16 @@ class WorkLogForm(forms.ModelForm):
         
         return self.cleaned_data
 
+
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+import re
 from .models import CustomUser
 
 class CustomUserRegistrationForm(UserCreationForm):
-    # Add additional fields for role, first_name, last_name, etc.
+    # Add additional fields for role
     role = forms.ChoiceField(
         choices=CustomUser.ROLE_CHOICES, 
         required=True,
@@ -61,8 +71,6 @@ class CustomUserRegistrationForm(UserCreationForm):
         fields = ('username', 'email', 'role', 'password1', 'password2')
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
@@ -70,26 +78,36 @@ class CustomUserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Customize field attributes or labels if needed
         self.fields['role'].label = "User Role"
         self.fields['role'].help_text = "Select the role for the user (admin, manager, employee)"
+        
+        # Label and help text customization for other fields
+        self.fields['username'].label = "Username"
+        self.fields['email'].label = "Email"
+        self.fields['password1'].label = "Password"
+        self.fields['password2'].label = "Confirm Password"
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        # Ensure the username only contains letters (no numbers or special characters)
+        if not re.match('^[A-Za-z]+$', username):
+            raise ValidationError("Username must only contain letters (no digits or symbols).")
+        return username
 
 
-from django import forms
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
 
-from django import forms
-from .models import Task
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['status']
-
 
 
 

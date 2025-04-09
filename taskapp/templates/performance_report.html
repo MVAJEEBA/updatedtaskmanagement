@@ -1,6 +1,7 @@
-{% extends 'base_generic.html' %}
 
-{% block content %}
+{% load static %}
+  {% include "adminheader.html" %}
+
   <h1>Admin Dashboard</h1>
   
   <h2>Performance Reports</h2>
@@ -17,4 +18,4 @@
     <p>No performance reports available.</p>
   {% endfor %}
 
-{% endblock %}
+

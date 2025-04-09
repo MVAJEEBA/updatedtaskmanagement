@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'logins/style.css' %}" />
+   
+    {% include "adminheader.html" %}
 
 <body>
+    <link rel="stylesheet" type="text/css" href="{% static 'projectcreat/style.css' %}">
+
 
 <form method="post" style="border:1px solid #ccc">
     {% csrf_token %}
     <div class="container">
-        <h1>Create or Update Project</h1>
+        <h1>Create  Project</h1>
         <hr>
         
         <!-- Project Name -->
@@ -37,12 +40,12 @@
         <input type="date" name="end_date" required>
 
         <!-- Project Status -->
-        <label for="status"><b>status_detailes</b></label>
+        <!-- <label for="status"><b>status_details</b></label>
                 <select name="status" required>
-                    {% for status_details in status_details %}
-                        <option value="{{ status_details.id }}">{{ status_details.status_type }}</option>
+                    {% for status_detail in status_details %}
+                        <option value="{{ status_detail.id }}">{{ status_detail.status_type }}</option>
                     {% endfor %}
-                </select><br><br>
+                </select><br><br> -->
 
         <div class="clearfix">
             <button type="submit" class="Submit">Submit</button>

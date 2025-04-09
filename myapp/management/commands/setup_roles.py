@@ -40,3 +40,6 @@ class Command(BaseCommand):
             user.groups.add(user_group)
 
         self.stdout.write(self.style.SUCCESS('Roles assigned to users based on their roles!'))
+        
+        
+        

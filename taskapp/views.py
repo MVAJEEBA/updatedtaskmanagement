@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import CustomUserRegistrationForm, LoginForm
-from .models import CustomUser, Project, Task, Statuses, WorkLog, EmployeePerformanceReport
+from .models import CustomUser, Task, Statuses, WorkLog, EmployeePerformanceReport
 from django.utils import timezone
 from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
@@ -18,6 +18,8 @@ from django.dispatch import receiver
 from .models import Task, EmployeePerformanceReport, Statuses
 from django.utils import timezone
 from django.db.models import Count
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Project
 
 
 
@@ -75,15 +77,18 @@ def admin_dashboard(request):
 
     
 @login_required(login_url='loginpage')
-def manager_dashboard(request):    
+def manager_dashboard(request):
+    print(request.user)
+
     project = Project.objects.filter(assigned_to=request.user)    
-    return render(request, 'manager_dashboard.html', {'project': project})
+    return render(request, 'manager_dashboard.html', {'project': project,'user': request.user})
 
 
 @login_required(login_url='loginpage')
 def employee_dashboard(request):
     tasks = Task.objects.filter(employee=request.user)
-    completed_task_count = tasks.filter(status=2).count()
+    completed_task_count = tasks.filter(status=1).count()
+    print(completed_task_count)
     total_task_count = tasks.count()
     total_hours = WorkLog.objects.filter(user =request.user).aggregate(Sum('hours'))['hours__sum']
     total_hours_worked = total_hours if total_hours else 0
@@ -102,7 +107,7 @@ def project_detail(request, project_id):
     tasks = Task.objects.filter(project=project)
     return render(request, 'project_detail.html', {'project': project, 'tasks': tasks})
 
-@login_required
+
 def statustype(request):
     if request.method == "POST":
         statustype=request.POST.get('statustype')
@@ -116,7 +121,10 @@ def statustype(request):
 @login_required(login_url='loginpage')
 def user_detail(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
-    return render(request, 'user_detail.html', {'user': user})
+    print(user.id)
+    projects=Project.objects.filter(assigned_to=user.id)
+    tasks=Task.objects.filter(employee=user.id)
+    return render(request, 'user_detail.html', {'user': user,"tasks":tasks,"projects":projects})
 
 
 
@@ -135,7 +143,8 @@ def create_project(request):
         today = datetime.today().date()
         start_date = today
         end_date = request.POST.get('end_date')
-        status = request.POST.get('status')
+        status_data = request.POST.get('status')
+        status = Statuses.objects.get(id=2)
    
         try:
             created_by = CustomUser.objects.get(id=admin_id)
@@ -165,53 +174,87 @@ def create_project(request):
 
 @login_required(login_url='loginpage')
 def project_list(request):
-    projects = Project.objects.all()
+    projects = Project.objects.select_related('status').all()
     return render(request, 'project_list.html', {'projects': projects})
+
+
+
+
+@login_required(login_url='loginpage')
+def edit_project(request, id):
+    managers = CustomUser.objects.filter(role="manager")
+    project = get_object_or_404(Project, id=id)
+    status_details = Statuses.objects.all()
+    if request.method == 'POST':
+        project.name = request.POST.get('name')
+        project.description = request.POST.get('description')
+        project.save()
+        return redirect('project_list') 
+    return render(request, 'edit_project.html', {'project': project,'managers':managers,'status_details':status_details})
+
+@login_required(login_url='loginpage')
+def delete_project(request, id):
+    project = get_object_or_404(Project, id=id)
+    if request.method == 'POST':
+        project.delete()
+        return redirect('project_list')  
+    return render(request, 'delete_project.html', {'project': project})
+
+
+def update_project_status(project_id):
+    project = Project.objects.get(id=project_id)
+    completed_status = Statuses.objects.get(status_type="Completed")    
+    all_tasks_completed = not project.tasks.filter(status__status_type="Completed").exists()
+    if all_tasks_completed:
+        project.status = completed_status 
+        project.save()
+
 
 
 @login_required(login_url='loginpage')
 def create_task(request, id):
-    print(id)
-    print(id)
     print(id)
     project = get_object_or_404(Project, id=id)
     users = CustomUser.objects.filter(role="employee")  
     status_details = Statuses.objects.all()
 
     if request.method == 'POST':
+        
         name = request.POST.get('name')
         description = request.POST.get('description')
         priority = request.POST.get('priority')
-        status_name = request.POST.get('status')
-        print(status_name)
+        status_name = request.POST.get('status') 
         assigned_to = request.POST.get('assigned_to') 
         project_id = request.POST.get('project')  
         due_date = request.POST.get('due_date')
         created = request.session.get('user_id')  
         created_by = CustomUser.objects.get(id=created)
+
         try:
             
             assigned_user = CustomUser.objects.get(id=assigned_to)
-            project = Project.objects.get(id=project_id)
-            status = Statuses.objects.get(id=status_name)             
+            project = Project.objects.get(id=project_id)           
+           
+            default_status = Statuses.objects.get(status_type="Not Started")  # Assuming 'Not Started' is a valid status
+
+          
             high_priority_tasks = Task.objects.filter(
                 employee=assigned_user, 
-                priority="high", 
-                
-            ).count()
-            
+                priority="high"
+            ).exclude(status__status_type="Completed").count()
+           
             if high_priority_tasks >= 3 and priority == "high":
                 return JsonResponse({'success': False, 'message': 'This employee already has 3 high-priority tasks. Cannot assign more.'})
                 
-        except (CustomUser.DoesNotExist, Project.DoesNotExist):
-            return JsonResponse({'success': False, 'message': 'User or Project not found.'})
+        except (CustomUser.DoesNotExist, Project.DoesNotExist, Statuses.DoesNotExist):
+            return JsonResponse({'success': False, 'message': 'User, Project, or Status not found.'})
 
        
         new_task = Task(
             name=name,
             description=description,
             priority=priority,
-            status=status,
+            status=default_status,  
             created_by=created_by,
             employee=assigned_user,
             project=project,  
@@ -221,16 +264,54 @@ def create_task(request, id):
         )
         new_task.save()
 
-        
         return JsonResponse({'success': True, 'message': 'Task created successfully!'})
-        
 
+   
     return render(request, 'task_create.html', {
         'project': project,
         'status_details': status_details, 
-        'users':users 
+        'users': users 
     })
 
+
+
+@login_required(login_url='loginpage')
+def edit_task(request, id):
+    
+    task = get_object_or_404(Task, id=id)    
+    employees = CustomUser.objects.filter(role="manager")    
+    statuses = Statuses.objects.all()
+
+   
+    if request.method == 'POST':       
+        task.name = request.POST.get('name', task.name)
+        task.description = request.POST.get('description', task.description)    
+        
+        assigned_to_id = request.POST.get('assigned_to')
+        if assigned_to_id:
+            task.assigned_to_id = assigned_to_id       
+        
+        task.end_date = request.POST.get('end_date', task.due_date)
+        
+       
+        status_id = request.POST.get('status')
+        if status_id:
+            task.status_id = status_id       
+       
+        task.priority = request.POST.get('priority', task.priority)
+        task.due_date = request.POST.get('due_date', task.due_date)       
+        task.save()        
+        return redirect('project_detail', project_id=task.project.id)
+   
+    return render(request, 'edit_task.html', {'task': task, 'employees': employees, 'statuses': statuses})
+
+@login_required(login_url='loginpage')
+def task_delete(request, id):
+    task = get_object_or_404(Task, id=id)    
+    project_id = task.project.id
+    task.delete()
+   
+    return redirect('project_detail', project_id=project_id)
 
 
 
@@ -240,8 +321,9 @@ def task_list(request):
     user=request.session.get('user_id')
     print (user)
     tasks = Task.objects.select_related('employee').filter(created_by=user)
-
     return render(request, 'task_list.html', {'tasks': tasks})
+
+
 
 
 @login_required(login_url='loginpage')
@@ -252,33 +334,26 @@ def work_log_view(request):
 
     if date_str:
         try:
-           
             date = datetime.strptime(date_str, '%Y-%m-%d').date()
         except ValueError:
-            
             date = datetime.today().date()
     else:
-        
         date = datetime.today().date()
     
-    
-    total_hours_worked = WorkLog.objects.filter(user=request.user,date=date).aggregate(Sum('hours'))['hours__sum'] or 0
+    total_hours_worked = WorkLog.objects.filter(user=request.user, date=date).aggregate(Sum('hours'))['hours__sum'] or 0
     print(total_hours_worked)
-    
     
     if request.method == "POST":
         hours_worked = float(request.POST['hours'])
-        print(hours_worked)
         task = request.POST.get('task')
         print(task)
-        print
-        
         
         if total_hours_worked + hours_worked > 8:
             
-            return render(request, 'work_log_form.html', {'task': task, 'total_hours_worked': total_hours_worked, 'error_message': "You cannot log more than 8 hours in a day."})
+            messages.error(request, "You cannot log more than 8 hours in a day.")
+            return redirect('employee_dashboard')
         
-        # Log the work hours
+        
         description = request.POST['description']
         task_instance = Task.objects.get(id=task)
         WorkLog.objects.create(
@@ -288,9 +363,13 @@ def work_log_view(request):
             description=description,
             date=date  
         )
-        return redirect('employee_dashboard')  
+        
+        
+        messages.success(request, "Work log submitted successfully!")
+        return redirect('employee_dashboard') 
     
-    return render(request, 'work_log_form.html', {'task': task, 'total_hours_worked': total_hours_worked, 'date': date})
+    return render(request, 'work_log_form.html', {'total_hours_worked': total_hours_worked, 'date': date})
+
 
 
 @login_required(login_url='loginpage')
@@ -344,26 +423,18 @@ def update_staus(request):
 
         uploadfile = request.FILES.get('uploadfile')
         print(uploadfile)
-
-        tasks = get_object_or_404(Task, id=id)
-        
-        
+        tasks = get_object_or_404(Task, id=id)      
         tasks.status_id = status_id 
-        tasks.file = uploadfile  
-        
-        
-        tasks.save() 
-        
+        tasks.file = uploadfile    
+        tasks.save()    
        
-        return JsonResponse({"success": True, "message": "Status updated successfully!"})
-
-    
+        return JsonResponse({"success": True, "message": "Status updated successfully!"})    
     return JsonResponse({"success": False, "message": "Invalid request method."})
 
-
+@login_required(login_url='loginpage')
 @receiver(post_save, sender=Task)
 def performance_report(sender, instance, created, **kwargs):
-    if created or instance.status.status_type == 'completed':  # Check if task is created or status updated
+    if created or instance.status.status_type == 'completed': 
         employee = instance.employee        
         completed_status = Statuses.objects.get(status_type='completed')
         if instance.status == completed_status:
@@ -385,12 +456,19 @@ def performance_report(sender, instance, created, **kwargs):
             else:
                 print(f"Performance report not created for {employee.username} as the count is {completed_tasks_count}")
 
-
-
-
+@login_required(login_url='loginpage')
 def performance_reportview(request):    
     performance_reports = EmployeePerformanceReport.objects.all()
     return render(request, 'performance_report.html', {'performance_reports': performance_reports})
+
+@login_required(login_url='loginpage')
+def emplyeeperfomance_report(request):
+    performance_reports = EmployeePerformanceReport.objects.filter(employee=request.user)
+    return render(request, 'employeeperfomancereportview.html', {'performance_reports': performance_reports})
+
+
+
+
 
 
 

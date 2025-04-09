@@ -1,6 +1,6 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
+{% load static %}
+{% include "managerheder.html" %}
+<link rel="stylesheet" type="text/css" href="{% static 'projectcreat/style.css' %}">
     <div class="container">
         <h1>Create Task</h1>
         <hr>
@@ -37,17 +37,13 @@
                 <!-- Task Status -->
                 <label for="assigned_to"><b>Employees</b></label>
                 <select name="assigned_to" required>
+                    <option value="">Select Employees</option>
                     {% for users in users %}
                         <option value="{{ users.id }}">{{ users.username }}</option>
                     {% endfor %}
                 </select><br><br>
                 <!-- Assign To -->
-                <label for="status"><b>status_detailes</b></label>
-                <select name="status" required>
-                    {% for status_details in status_details %}
-                        <option value="{{ status_details.id }}">{{ status_details.status_type }}</option>
-                    {% endfor %}
-                </select><br><br>
+               
 
                 <!-- Due Date -->
                 <label for="due_date"><b>Due Date</b></label>
@@ -128,4 +124,4 @@ function showAlert(type, message) {
 
     </script>
     
-{% endblock %}
+

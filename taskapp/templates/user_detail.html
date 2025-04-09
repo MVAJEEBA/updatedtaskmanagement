@@ -1,37 +1,77 @@
-{% extends 'base_generic.html' %}
-
-{% block content %}
+{% load static %}
+{% include "adminheader.html" %}
   <h1>User Details</h1>
   
   <h2>{{ user.username }}'s Profile</h2>
   <p>Email: {{ user.email }}</p>
   <p>Role: {{ user.get_role_display }}</p>
 
+  <h3>Assigned Projects</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Discription</th>
+        <th>Created_by</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th> Created_at</th>
+        <th>Assign To</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for projects in projects %}
+        <tr>
+          <td>{{ projects.name }}</td>
+          <td>{{ projects.description }}</td>
+          <td>{{ projects.created_by }}</td>
+          <td>{{ projects.start_date }}</td>
+          <td>{{ projects.end_date }}</td>
+          <td>{{ projects.created_at }}</td>
+          <td>{{ projects.assigned_to }}</td>
+          <td>{{ projects.status }}</td>
+          
+        </tr>
+      {% endfor %}
+    </tbody>
+
   <h3>Assigned Tasks</h3>
   <table>
     <thead>
       <tr>
         <th>Task Name</th>
-        <th>Priority</th>
+        <th>Created_by</th>
+        <th>Description</th>
+        <th>Prority</th>
+        <th>Due_date</th>
+        <th>Created_at</th>
+        <th>Updated_at</th>
+        <th>File</th>
+        <th>Employee</th>
+        <th>Project</th>
         <th>Status</th>
-        <th>Assigned Date</th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for task in tasks %}
         <tr>
           <td>{{ task.name }}</td>
+          <td>{{ task.created_by }}</td>
+          <td>{{ task.description }}</td>
           <td>{{ task.priority }}</td>
-          <td>{{ task.status }}</td>
-          <td>{{ task.assigned_date }}</td>
-          <td>
-            <a href="">View</a> <!-- Link to task details -->
-          </td>
+          <td>{{ task.due_date }}</td>
+          <td>{{ task.created_at }}</td>
+          <td>{{ task.updated_at }}</td>
+          <td>{{ task.file }}</td>
+          <td>{{ task.employee.username}}</td>
+          <td>{{ task.project.name }}</td>
+          <td>{{ task.status.status_type }}</td>
+          
         </tr>
       {% endfor %}
     </tbody>
   </table>
 
   <p><a href="{% url 'admin_dashboard' %}">Back to Dashboard</a></p>
-{% endblock %}
+

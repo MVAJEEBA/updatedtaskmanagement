@@ -1,0 +1,57 @@
+
+  <h1>Edit Task: {{ task.name }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    
+    <div>
+      <label for="name">Task Name</label>
+      <input type="text" name="name" id="name" value="{{ task.name }}" required>
+    </div>
+
+    <div>
+      <label for="description">Description</label>
+      <textarea name="description" id="description">{{ task.description }}</textarea>
+    </div>
+
+    <div>
+      <label for="assigned_to">Assigned To</label>
+      <select name="assigned_to" id="assigned_to" required>
+        <option value="" disabled>Select an employee</option>
+        {% for employee in employees %}
+          <option value="{{ employee.id }}" {% if task.assigned_to.id == employee.id %} selected {% endif %}>
+            {{ employee.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    
+
+    <div>
+      <label for="status">Status</label>
+      <select name="status" id="status" required>
+        <option value="" disabled>Select a status</option>
+        {% for status in statuses %}
+          <option value="{{ status.id }}" {% if task.status.id == status.id %} selected {% endif %}>
+            {{ status.status_type }}  <!-- Adjust to the appropriate field that represents the status -->
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label for="priority">Priority</label>
+      <input type="text" name="priority" id="priority" value="{{ task.priority }}" required>
+    </div>
+
+    <div>
+      <label for="due_date">Due Date</label>
+      <input type="date" name="due_date" id="due_date" value="{{ task.due_date|date:'Y-m-d' }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+  </form>
+
+  <br>
+  <a href="{% url 'project_detail' project_id=task.project.id %}" class="btn btn-secondary">Back to Project</a>

@@ -1,47 +1,48 @@
-{% extends "base_generic.html" %}
+{% load static %}
+{% include "managerheder.html" %}
+<div class="container">
+  <h1>Project Detail: {{ project.name }}</h1>
 
-{% block content %}
-  <div class="container">
-    <h1>Project Detail: {{ project.name }}</h1>
-
-    <div class="project-info">
-      <p><strong>Description:</strong> {{ project.description }}</p>
-      <p><strong>Created on:</strong> {{ project.created_at }}</p>
-      <p><strong>Status:</strong> {{ project.get_status_display }}</p>
-    </div>
-
-    <h2>Associated Tasks</h2>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Task Name</th>          
-          <th>Priority</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Assign To:</th>
-          <th>Project Name</th>
-          <th>Created by</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-        {% for task in tasks %}
-          <tr>
-            <td>{{ task.name }}</td>
-            <td>{{ task.get_priority_display }}</td>  <!-- Ensure this method is available for priority -->
-            <td>{{ task.get_status_display }}</td>  <!-- Ensure this method is available for status -->
-            <td>{{ task.due_date }}</td>
-            <td>{{ task.employee}}</td>
-            <td>{{ task.project}}</td>
-            <td>{{ task.created_by}}</td>
-            
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5">No tasks assigned yet.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="project-info">
+    <p><strong>Description:</strong> {{ project.description }}</p>
+    <p><strong>Created on:</strong> {{ project.created_at }}</p>
+    <p><strong>Status:</strong> {{ project.status.status_type }}</p>
   </div>
-{% endblock %}
+
+  <h2>Associated Tasks</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Task Name</th>          
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Due Date</th>
+        <th>Assign To:</th>
+        <th>Project Name</th>
+        <th>Created by</th>
+        <th>Actions</th> <!-- Added Actions column for edit and delete -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td>{{ task.name }}</td>
+          <td>{{ task.get_priority_display }}</td>
+          <td>{{ task.status.status_type }}</td>
+          <td>{{ task.due_date }}</td>
+          <td>{{ task.employee }}</td>
+          <td>{{ task.project }}</td>
+          <td>{{ task.created_by }}</td>
+          <td>
+            <a href="{% url 'edit_task' task.id %}" class="btn btn-warning">Edit</a> 
+            <a href="{% url 'delete_task' task.id %}" class="btn btn-danger">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8">No tasks assigned yet.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
