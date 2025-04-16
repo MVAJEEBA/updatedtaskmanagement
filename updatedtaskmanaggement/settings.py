@@ -81,16 +81,30 @@ WSGI_APPLICATION = 'updatedtaskmanaggement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import sys
+
+# Default production database configuration (MySQL)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',      
-        'NAME': 'devtest1db',              
-        'USER': 'devtest1user',          
-        'PASSWORD': 'TMuWph7wfyKD3jRtvcngJQ',                
-        'HOST': 'mysql.zoondia.net',                  
-        'PORT': '3306',   
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'devtest1db',
+        'USER': 'devtest1user',
+        'PASSWORD': 'TMuWph7wfyKD3jRtvcngJQ',
+        'HOST': 'mysql.zoondia.net',
+        'PORT': '3306',
     }
 }
+
+# Switch to SQLite for testing
+if 'test' in sys.argv:
+    print("Using SQLite for tests.")
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+else:
+    print("Using MySQL for production.")
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -135,6 +149,8 @@ STATIC_ROOT = 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'taskapp.CustomUser'
+# LOGIN_URL = '/loginpage/'
+
 
 # settings.py
 # settings.py

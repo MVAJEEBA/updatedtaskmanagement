@@ -79,7 +79,6 @@ def admin_dashboard(request):
 @login_required(login_url='loginpage')
 def manager_dashboard(request):
     print(request.user)
-
     project = Project.objects.filter(assigned_to=request.user)    
     return render(request, 'manager_dashboard.html', {'project': project,'user': request.user})
 
@@ -211,7 +210,7 @@ def update_project_status(project_id):
 
 
 
-@login_required(login_url='loginpage')
+@login_required(login_url='/loginpage/')
 def create_task(request, id):
     print(id)
     project = get_object_or_404(Project, id=id)
@@ -326,7 +325,7 @@ def task_list(request):
 
 
 
-@login_required(login_url='loginpage')
+@login_required(login_url='/loginpage/')
 def work_log_view(request):
     print(request.user)
     
@@ -379,7 +378,7 @@ def calculate_total_work_hours(user):
 
 
 
-@login_required(login_url='loginpage')
+@login_required(login_url='/loginpage/')
 def do_task(request, id):
     task_details = get_object_or_404(Task, id=id) 
     status = Statuses.objects.all()

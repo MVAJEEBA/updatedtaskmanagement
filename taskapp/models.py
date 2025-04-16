@@ -1,6 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth import get_user_model 
+from django.db import models
+from django.conf import settings
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
@@ -96,14 +101,7 @@ class Task(models.Model):
     def is_completed(self):
         return self.status == 'completed'
 
-from django.db import models
-from django.conf import settings
 
-
-
-from django.db import models
-from django.conf import settings
-from django.utils import timezone
 
 class EmployeePerformanceReport(models.Model):
     employee = models.ForeignKey(

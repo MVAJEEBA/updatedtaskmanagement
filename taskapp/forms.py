@@ -17,6 +17,9 @@ from .models import CustomUser
 from django import forms
 from django import forms
 from .models import Task
+import re
+
+
 
 
 
@@ -52,11 +55,7 @@ class WorkLogForm(forms.ModelForm):
 
 
 
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
-import re
-from .models import CustomUser
+
 
 class CustomUserRegistrationForm(UserCreationForm):
     # Add additional fields for role
@@ -80,8 +79,6 @@ class CustomUserRegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['role'].label = "User Role"
         self.fields['role'].help_text = "Select the role for the user (admin, manager, employee)"
-        
-        # Label and help text customization for other fields
         self.fields['username'].label = "Username"
         self.fields['email'].label = "Email"
         self.fields['password1'].label = "Password"
